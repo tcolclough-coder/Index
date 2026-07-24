@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EtzQT">
+<meta name="theme-color" content="#0f1117">
+<title>EtzQT Schedule</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap');
+:root {
+  --bg:#0f1117; --surface:#181c27; --card:#1e2335; --border:#2a2f45;
+  --accent:#f4a72a; --adim:rgba(244,167,42,0.13);
+  --green:#3dd68c; --gdim:rgba(61,214,140,0.13);
+  --blue:#5b8dee; --bdim:rgba(91,141,238,0.13);
+  --red:#ff5f5f;
+  --muted:#6b7280; --text:#e8eaf0; --sub:#9aa0b4;
+  --r:10px;
+  --st:env(safe-area-inset-top,0px);
+  --sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overscroll-behavior:none;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding-top:var(--st);}
+
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;}
+.logo span{color:var(--accent);}
+.week-nav{display:flex;align-items:center;gap:8px;}
+.wk-label{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--sub);min-width:140px;text-align:center;}
+.nav-btn{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:7px;width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;}
+.nav-btn:active{background:var(--accent);color:#0f1117;}
+
+main{max-width:1100px;margin:0 auto;padding:14px 10px calc(80px + var(--sb));}
+
+.pay-banner{background:var(--adim);border:1px solid rgba(244,167,42,.35);border-radius:var(--r);padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.pay-left{display:flex;align-items:center;gap:10px;}
+.pay-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--accent);margin-bottom:2px;}
+.pay-date{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--text);}
+.pay-countdown{font-size:11px;color:var(--sub);}
+.pay-right{text-align:right;}
+.pay-total-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:2px;}
+.pay-total-amt{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--accent);}
+
+.truck-block{margin-bottom:28px;}
+.truck-header{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;}
+.t1-header{background:var(--gdim);border:1px solid rgba(61,214,140,.3);color:var(--green);}
+.t2-header{background:var(--bdim);border:1px solid rgba(91,141,238,.3);color:var(--blue);}
+
+.rates-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;}
+.rl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);}
+.rf{display:flex;align-items:center;gap:6px;}
+.rn{font-size:11px;font-weight:600;color:var(--sub);}
+.rw{position:relative;}
+.rw em{position:absolute;left:7px;top:50%;transform:translateY(-50%);color:var(--accent);font-style:normal;font-size:11px;font-weight:700;pointer-events:none;}
+.ri{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:5px 5px 5px 18px;width:70px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;-webkit-appearance:none;}
+.ri:focus{outline:none;border-color:var(--accent);}
+
+.sum-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;}
+.sc.tot{background:var(--adim);border-color:rgba(244,167,42,.3);}
+.sn{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:2px;}
+.ss{font-size:10px;color:var(--sub);margin-bottom:3px;}
+.sp{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--accent);}
+
+.gh{display:grid;grid-template-columns:82px repeat(7,1fr);gap:4px;margin-bottom:4px;}
+.gh>div{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:center;padding:3px 0;}
+.gh .tdy{color:var(--accent);}
+.dn{display:block;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-top:1px;}
+.tdy .dn{color:var(--accent);}
+
+.pr{display:grid;grid-template-columns:82px repeat(7,1fr);gap:4px;margin-bottom:4px;}
+.pl{display:flex;align-items:center;gap:5px;padding:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);}
+.av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;}
+.av-ty{background:rgba(244,167,42,.2);color:var(--accent);}
+.av-an{background:rgba(61,214,140,.2);color:var(--green);}
+.av-da{background:rgba(139,150,255,.2);color:#8b96ff;}
+.av-de{background:rgba(91,141,238,.2);color:var(--blue);}
+.av-ri{background:rgba(255,95,95,.2);color:var(--red);}
+.av-jo{background:rgba(255,200,80,.2);color:#ffc850;}
+.pname{font-size:10px;font-weight:700;color:var(--text);}
+.prole{font-size:9px;color:var(--muted);}
+
+.cell{border-radius:var(--r);border:1.5px dashed var(--border);background:var(--surface);min-height:62px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;touch-action:manipulation;user-select:none;}
+.cell:active{transform:scale(.96);}
+.cell.on-t1{border-style:solid;border-color:var(--green);background:var(--gdim);}
+.cell.on-t2{border-style:solid;border-color:var(--blue);background:var(--bdim);}
+.ci{font-size:13px;}
+.cs{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);}
+.cell.on-t1 .cs{color:var(--green);}
+.cell.on-t2 .cs{color:var(--blue);}
+.cn{font-size:8px;color:var(--sub);text-align:center;max-width:60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cp{font-size:9px;font-weight:700;color:var(--accent);}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px 18px 0 0;padding:20px 20px calc(22px + var(--sb));width:100%;max-width:460px;}
+.handle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.modal h3{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px;}
+.modal label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px;}
+.modal input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px 13px;font-family:'Inter',sans-serif;font-size:14px;margin-bottom:12px;-webkit-appearance:none;}
+.modal input:focus{outline:none;border-color:var(--accent);}
+.pay-wrap{position:relative;margin-bottom:12px;}
+.pay-wrap em{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--accent);font-style:normal;font-size:14px;font-weight:700;pointer-events:none;}
+.pay-wrap input{padding-left:26px;margin-bottom:0;}
+.ma{display:flex;gap:8px;margin-top:4px;}
+.btn{flex:1;padding:12px;border-radius:10px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;}
+.btn:active{opacity:.75;}
+.bs{background:var(--accent);color:#0f1117;}
+.bd{background:var(--red);color:#fff;}
+.bc{background:var(--border);color:var(--text);}
+
+.divider{border:none;border-top:2px solid var(--border);margin:4px 0 24px;}
+.foot{text-align:center;color:var(--muted);font-size:10px;margin-top:24px;}
+
+@media(max-width:640px){
+  .gh,.pr{grid-template-columns:60px repeat(7,1fr);gap:3px;}
+  .pl{padding:5px;gap:3px;}
+  .av{width:18px;height:18px;font-size:7px;}
+  .prole{display:none;}
+  .pname{font-size:9px;}
+  .cell{min-height:54px;}
+  .sum-row{grid-template-columns:repeat(3,1fr);}
+  .rates-bar{gap:8px;}
+  .ri{width:62px;}
+}
+@media(max-width:400px){
+  .gh,.pr{grid-template-columns:46px repeat(7,1fr);gap:2px;}
+  .cell{min-height:46px;}
+  .ci{font-size:11px;}
+  main{padding:10px 6px calc(70px + var(--sb));}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Etz<span>QT</span></div>
+  <div class="week-nav">
+    <button class="nav-btn" id="prev">&#8592;</button>
+    <div class="wk-label" id="wkLabel"></div>
+    <button class="nav-btn" id="next">&#8594;</button>
+  </div>
+</header>
+
+<main>
+  <div class="pay-banner">
+    <div class="pay-left">
+      <div style="font-size:20px">💵</div>
+      <div>
+        <div class="pay-label">Payday for this week</div>
+        <div class="pay-date" id="payDate">—</div>
+        <div class="pay-countdown" id="payCountdown"></div>
+      </div>
+    </div>
+    <div class="pay-right">
+      <div class="pay-total-label">Both Trucks Total</div>
+      <div class="pay-total-amt" id="payTotal">$0</div>
+    </div>
+  </div>
+
+  <div id="app"></div>
+  <p class="foot">Tap a cell to log a shift & pay &nbsp;·&nbsp; Payday = 3 Fridays after week worked</p>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="handle"></div>
+    <h3 id="mTitle"></h3>
+    <label>Route / Note (optional)</label>
+    <input id="mNote" type="text" autocomplete="off" placeholder="e.g. Lowe's Columbia run…">
+    <label>Pay for this shift</label>
+    <div class="pay-wrap">
+      <em>$</em>
+      <input id="mPay" type="number" inputmode="numeric" min="0" step="5" placeholder="0">
+    </div>
+    <div class="ma">
+      <button class="btn bc" id="mCancel">Cancel</button>
+      <button class="btn bd" id="mDel" style="display:none">Remove</button>
+      <button class="btn bs" id="mSave">Confirm Shift</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CREW = [
+  {id:'ty',      name:'Ty',      role:'Owner-Op', av:'av-ty', init:'TY'},
+  {id:'anthony', name:'Anthony', role:'Driver',   av:'av-an', init:'AN'},
+  {id:'damarien',name:'Damarien',role:'Helper',   av:'av-da', init:'DA'},
+  {id:'derawnte',name:'Derawnte',role:'Driver',   av:'av-de', init:'DR'},
+  {id:'ricky',   name:'Ricky',   role:'Helper',   av:'av-ri', init:'RI'},
+  {id:'jordan',  name:'Jordan',  role:'Helper',   av:'av-jo', init:'JO'},
+];
+
+const TRUCKS = [
+  {id:'t1', label:'Truck 1', hdrCls:'t1-header', onCls:'on-t1'},
+  {id:'t2', label:'Truck 2', hdrCls:'t2-header', onCls:'on-t2'},
+];
+
+const DS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DF=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+let off=0;
+let sched=ld('etzSchedV6',{});
+let rates=ld('etzRatesV6',{});
+let ctx=null;
+
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))??d;}catch{return d;}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function getRate(tid,pid){return parseFloat(rates[tid]?.[pid])||0;}
+function setRate(tid,pid,val){if(!rates[tid])rates[tid]={};rates[tid][pid]=parseFloat(val)||0;sv('etzRatesV6',rates);}
+
+function wkDates(o){
+  const t=new Date();t.setHours(0,0,0,0);
+  const s=new Date(t);
+  s.setDate(t.getDate()-((t.getDay()+1)%7)+o*7);
+  return Array.from({length:7},(_,i)=>{const dt=new Date(s);dt.setDate(s.getDate()+i);return dt;});
+}
+function getPayday(dates){const pd=new Date(dates[0]);pd.setDate(dates[0].getDate()+20);return pd;}
+function dk(dt){return dt.toISOString().slice(0,10);}
+function dfmt(dt){return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function dfmtFull(dt){return dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});}
+function countdown(pd){
+  const t=new Date();t.setHours(0,0,0,0);
+  const d=Math.round((pd-t)/864e5);
+  if(d<0)return 'Paid out';
+  if(d===0)return '🎉 Payday is today!';
+  if(d===1)return 'Tomorrow!';
+  return `${d} days away`;
+}
+
+function render(){
+  const dates=wkDates(off);
+  const today=new Date();today.setHours(0,0,0,0);
+  const payday=getPayday(dates);
+
+  document.getElementById('wkLabel').textContent=`${dfmt(dates[0])} – ${dfmt(dates[dates.length-1])}`;
+  document.getElementById('payDate').textContent=dfmtFull(payday);
+  document.getElementById('payCountdown').textContent=countdown(payday);
+
+  let grandTotal=0;
+  const app=document.getElementById('app');
+  app.innerHTML='';
+
+  TRUCKS.forEach((truck,ti)=>{
+    const block=document.createElement('div');
+    block.className='truck-block';
+
+    // Header
+    const hdr=document.createElement('div');
+    hdr.className=`truck-header ${truck.hdrCls}`;
+    hdr.innerHTML=`🚛 ${truck.label}`;
+    block.appendChild(hdr);
+
+    // Rates bar
+    const rbar=document.createElement('div');
+    rbar.className='rates-bar';
+    rbar.innerHTML='<span class="rl">Daily Rates</span>';
+    CREW.forEach(p=>{
+      const rf=document.createElement('div');
+      rf.className='rf';
+      rf.innerHTML=`<span class="rn">${p.name}</span><div class="rw"><em>$</em><input class="ri" data-tid="${truck.id}" data-pid="${p.id}" type="number" inputmode="numeric" min="0" step="5" value="${getRate(truck.id,p.id)}"></div>`;
+      rbar.appendChild(rf);
+    });
+    block.appendChild(rbar);
+
+    // Summary
+    const sumRow=document.createElement('div');
+    sumRow.className='sum-row';
+    let truckTotal=0;
+    CREW.forEach(p=>{
+      let days=0,pay=0;
+      dates.forEach(dt=>{
+        const sh=sched[truck.id]?.[p.id]?.[dk(dt)];
+        if(sh){days++;pay+=parseFloat(sh.pay)||getRate(truck.id,p.id);}
+      });
+      truckTotal+=pay; grandTotal+=pay;
+      const card=document.createElement('div');
+      card.className='sc';
+      card.innerHTML=`<div class="sn">${p.name}</div><div class="ss">${days} shift${days!==1?'s':''}</div><div class="sp">${pay>0?'$'+pay.toLocaleString():'—'}</div>`;
+      sumRow.appendChild(card);
+    });
+    const tot=document.createElement('div');
+    tot.className='sc tot';
+    tot.innerHTML=`<div class="sn">Truck Total</div><div class="ss">This week</div><div class="sp">$${truckTotal.toLocaleString()}</div>`;
+    sumRow.appendChild(tot);
+    block.appendChild(sumRow);
+
+    // Day header
+    const gh=document.createElement('div');
+    gh.className='gh';
+    gh.innerHTML='<div></div>';
+    dates.forEach(dt=>{
+      const isTdy=dt.getTime()===today.getTime();
+      const d=document.createElement('div');
+      d.className=isTdy?'tdy':'';
+      d.innerHTML=`${DS[dt.getDay()]}<span class="dn">${dt.getDate()}</span>`;
+      gh.appendChild(d);
+    });
+    block.appendChild(gh);
+
+    // Crew rows
+    CREW.forEach(p=>{
+      const row=document.createElement('div');
+      row.className='pr';
+      const pl=document.createElement('div');
+      pl.className='pl';
+      pl.innerHTML=`<div class="av ${p.av}">${p.init}</div><div><div class="pname">${p.name}</div><div class="prole">${p.role}</div></div>`;
+      row.appendChild(pl);
+      dates.forEach(dt=>{
+        const k=dk(dt);
+        const sh=sched[truck.id]?.[p.id]?.[k];
+        const cell=document.createElement('div');
+        if(sh){
+          const shPay=parseFloat(sh.pay)||getRate(truck.id,p.id);
+          cell.className=`cell ${truck.onCls}`;
+          cell.innerHTML=`<span class="ci">✅</span><span class="cs">Worked</span>${sh.note?`<span class="cn">${sh.note}</span>`:''}${shPay?`<span class="cp">$${shPay.toLocaleString()}</span>`:''}`;
+          cell.onclick=()=>openM(truck,p,dt,k,true);
+        } else {
+          cell.className='cell';
+          cell.innerHTML=`<span class="ci">＋</span><span class="cs">Add</span>`;
+          cell.onclick=()=>openM(truck,p,dt,k,false);
+        }
+        row.appendChild(cell);
+      });
+      block.appendChild(row);
+    });
+
+    if(ti<TRUCKS.length-1){
+      const div=document.createElement('hr');
+      div.className='divider';
+      block.appendChild(div);
+    }
+    app.appendChild(block);
+  });
+
+  document.getElementById('payTotal').textContent='$'+grandTotal.toLocaleString();
+
+  document.querySelectorAll('.ri').forEach(inp=>{
+    inp.oninput=()=>{setRate(inp.dataset.tid,inp.dataset.pid,inp.value);render();};
+  });
+}
+
+function openM(truck,person,dt,k,existing){
+  ctx={tid:truck.id,pid:person.id,k};
+  const sh=sched[truck.id]?.[person.id]?.[k];
+  const defaultRate=getRate(truck.id,person.id);
+  document.getElementById('mTitle').textContent=`${truck.label} · ${person.name} · ${DF[dt.getDay()]} ${dfmt(dt)}`;
+  document.getElementById('mNote').value=sh?.note||'';
+  document.getElementById('mPay').value=sh?.pay||(defaultRate>0?defaultRate:'');
+  document.getElementById('mDel').style.display=existing?'flex':'none';
+  document.getElementById('mSave').textContent=existing?'Update':'Confirm Shift';
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('mPay').focus(),80);
+}
+function closeM(){document.getElementById('overlay').classList.remove('open');ctx=null;}
+
+document.getElementById('mSave').onclick=()=>{
+  if(!ctx)return;
+  const pay=document.getElementById('mPay').value;
+  const note=document.getElementById('mNote').value.trim();
+  if(!sched[ctx.tid])sched[ctx.tid]={};
+  if(!sched[ctx.tid][ctx.pid])sched[ctx.tid][ctx.pid]={};
+  sched[ctx.tid][ctx.pid][ctx.k]={pay,note};
+  sv('etzSchedV6',sched);closeM();render();
+};
+document.getElementById('mDel').onclick=()=>{
+  if(!ctx)return;
+  if(sched[ctx.tid]?.[ctx.pid])delete sched[ctx.tid][ctx.pid][ctx.k];
+  sv('etzSchedV6',sched);closeM();render();
+};
+document.getElementById('mCancel').onclick=closeM;
+document.getElementById('overlay').onclick=e=>{if(e.target.id==='overlay')closeM();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();});
+document.getElementById('prev').onclick=()=>{off--;render();};
+document.getElementById('next').onclick=()=>{off++;render();};
+render();
+</script>
+</body>
+</html>
