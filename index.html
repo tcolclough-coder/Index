@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EtzQT">
+<meta name="theme-color" content="#0f1117">
+<title>EtzQT Schedule</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap');
+:root {
+  --bg:#0f1117; --surface:#181c27; --card:#1e2335; --border:#2a2f45;
+  --accent:#f4a72a; --adim:rgba(244,167,42,0.13);
+  --green:#3dd68c; --gdim:rgba(61,214,140,0.13);
+  --blue:#5b8dee; --bdim:rgba(91,141,238,0.13);
+  --red:#ff5f5f; --rdim:rgba(255,95,95,0.13);
+  --purple:#b57bee; --pdim:rgba(181,123,238,0.13);
+  --muted:#6b7280; --text:#e8eaf0; --sub:#9aa0b4;
+  --r:10px;
+  --st:env(safe-area-inset-top,0px);
+  --sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overscroll-behavior:none;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding-top:var(--st);}
+
+/* NAV TABS */
+.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);display:flex;position:sticky;top:0;z-index:100;}
+.tab{flex:1;padding:14px 8px;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;text-align:center;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;touch-action:manipulation;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-logo{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:center;gap:4px;padding:14px 12px;}
+.tab-logo span{color:var(--accent);}
+
+/* PAGES */
+.page{display:none;max-width:1100px;margin:0 auto;padding:14px 10px calc(80px + var(--sb));}
+.page.active{display:block;}
+
+/* PAY BANNER */
+.pay-banner{background:var(--adim);border:1px solid rgba(244,167,42,.35);border-radius:var(--r);padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.pay-left{display:flex;align-items:center;gap:10px;}
+.pay-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--accent);margin-bottom:2px;}
+.pay-date{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--text);}
+.pay-countdown{font-size:11px;color:var(--sub);}
+.pay-right{text-align:right;}
+.pay-total-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:2px;}
+.pay-total-amt{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--accent);}
+
+/* WEEK NOTES */
+.week-notes-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;}
+.week-notes-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:6px;}
+.week-notes-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 12px;font-family:'Inter',sans-serif;font-size:13px;resize:none;min-height:48px;}
+.week-notes-input:focus{outline:none;border-color:var(--accent);}
+
+/* CLOSE WEEK BTN */
+.close-week-btn{width:100%;padding:12px;background:var(--pdim);border:1px solid rgba(181,123,238,.35);color:var(--purple);border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:20px;touch-action:manipulation;}
+.close-week-btn:active{opacity:.75;}
+
+.truck-block{margin-bottom:28px;}
+.truck-header{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;}
+.t1-header{background:var(--gdim);border:1px solid rgba(61,214,140,.3);color:var(--green);}
+.t2-header{background:var(--bdim);border:1px solid rgba(91,141,238,.3);color:var(--blue);}
+
+.rates-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px;}
+.rl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);}
+.rf{display:flex;align-items:center;gap:6px;}
+.rn{font-size:11px;font-weight:600;color:var(--sub);}
+.rw{position:relative;}
+.rw em{position:absolute;left:7px;top:50%;transform:translateY(-50%);color:var(--accent);font-style:normal;font-size:11px;font-weight:700;pointer-events:none;}
+.ri{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:5px 5px 5px 18px;width:70px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;-webkit-appearance:none;}
+.ri:focus{outline:none;border-color:var(--accent);}
+
+.sum-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;}
+.sc.tot{background:var(--adim);border-color:rgba(244,167,42,.3);}
+.sc.paid{background:var(--gdim);border-color:rgba(61,214,140,.3);}
+.sn{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:2px;}
+.ss{font-size:10px;color:var(--sub);margin-bottom:3px;}
+.sp{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--accent);}
+.paid-toggle{margin-top:5px;font-size:9px;font-weight:700;cursor:pointer;padding:3px 7px;border-radius:20px;border:none;touch-action:manipulation;}
+.paid-toggle.unpaid{background:var(--rdim);color:var(--red);}
+.paid-toggle.ispaid{background:var(--gdim);color:var(--green);}
+
+.gh{display:grid;gap:4px;margin-bottom:4px;}
+.gh>div{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:center;padding:3px 0;}
+.gh .tdy{color:var(--accent);}
+.dn{display:block;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-top:1px;}
+.tdy .dn{color:var(--accent);}
+
+.pr{display:grid;gap:4px;margin-bottom:4px;}
+.pl{display:flex;align-items:center;gap:5px;padding:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);}
+.av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;}
+.pname{font-size:10px;font-weight:700;color:var(--text);}
+.prole{font-size:9px;color:var(--muted);}
+
+.cell{border-radius:var(--r);border:1.5px dashed var(--border);background:var(--surface);min-height:62px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;touch-action:manipulation;user-select:none;}
+.cell:active{transform:scale(.96);}
+.cell.on-t1{border-style:solid;border-color:var(--green);background:var(--gdim);}
+.cell.on-t2{border-style:solid;border-color:var(--blue);background:var(--bdim);}
+.ci{font-size:13px;}
+.cs{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);}
+.cell.on-t1 .cs{color:var(--green);}
+.cell.on-t2 .cs{color:var(--blue);}
+.cn{font-size:8px;color:var(--sub);text-align:center;max-width:60px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cp{font-size:9px;font-weight:700;color:var(--accent);}
+
+/* HISTORY PAGE */
+.history-empty{text-align:center;color:var(--muted);font-size:13px;padding:60px 20px;}
+.history-week{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden;}
+.hw-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;touch-action:manipulation;}
+.hw-dates{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--text);}
+.hw-total{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--accent);}
+.hw-payday{font-size:10px;color:var(--sub);margin-top:2px;}
+.hw-body{padding:0 16px 14px;border-top:1px solid var(--border);}
+.hw-person{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.hw-person:last-child{border-bottom:none;}
+.hw-person-left{display:flex;align-items:center;gap:8px;}
+.hw-person-name{font-weight:600;}
+.hw-person-shifts{font-size:11px;color:var(--sub);}
+.hw-person-pay{font-weight:700;color:var(--accent);}
+.hw-paid-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.hw-paid-badge.paid{background:var(--gdim);color:var(--green);}
+.hw-paid-badge.unpaid{background:var(--rdim);color:var(--red);}
+.hw-notes{font-size:11px;color:var(--sub);margin-top:10px;padding:8px 10px;background:var(--card);border-radius:7px;font-style:italic;}
+.hw-delete{font-size:10px;color:var(--red);cursor:pointer;padding:4px 8px;border:1px solid var(--rdim);border-radius:6px;margin-top:10px;display:inline-block;touch-action:manipulation;}
+
+/* PDF EXPORT BTN */
+.export-btn{width:100%;padding:12px;background:var(--adim);border:1px solid rgba(244,167,42,.35);color:var(--accent);border-radius:var(--r);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:16px;touch-action:manipulation;}
+.export-btn:active{opacity:.75;}
+
+/* SETTINGS */
+.settings-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:10px;margin-top:18px;}
+.crew-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.crew-item input{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:14px;-webkit-appearance:none;}
+.crew-item input:focus{outline:none;border-color:var(--accent);}
+.crew-item select{background:var(--surface);border:1px solid var(--border);color:var(--sub);border-radius:8px;padding:10px 8px;font-family:'Inter',sans-serif;font-size:12px;-webkit-appearance:none;width:95px;}
+.remove-btn{background:var(--rdim);border:1px solid rgba(255,95,95,.3);color:var(--red);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;touch-action:manipulation;}
+.add-crew-btn{width:100%;padding:11px;background:var(--surface);border:1px dashed var(--border);color:var(--sub);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;margin-top:4px;}
+.save-btn{width:100%;padding:13px;background:var(--accent);color:#0f1117;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;margin-top:16px;}
+.save-btn:active{opacity:.8;}
+.settings-label{font-size:13px;color:var(--text);font-weight:600;margin-bottom:4px;display:block;}
+.settings-sub{font-size:11px;color:var(--sub);margin-bottom:14px;}
+
+/* SHIFT MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px 18px 0 0;padding:20px 20px calc(22px + var(--sb));width:100%;max-width:460px;}
+.handle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.modal h3{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px;}
+.modal label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px;}
+.modal input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px 13px;font-family:'Inter',sans-serif;font-size:14px;margin-bottom:12px;-webkit-appearance:none;}
+.modal input:focus{outline:none;border-color:var(--accent);}
+.pay-wrap{position:relative;margin-bottom:12px;}
+.pay-wrap em{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--accent);font-style:normal;font-size:14px;font-weight:700;pointer-events:none;}
+.pay-wrap input{padding-left:26px;margin-bottom:0;}
+.ma{display:flex;gap:8px;margin-top:4px;}
+.btn{flex:1;padding:12px;border-radius:10px;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;}
+.btn:active{opacity:.75;}
+.bs{background:var(--accent);color:#0f1117;}
+.bd{background:var(--red);color:#fff;}
+.bc{background:var(--border);color:var(--text);}
+
+.divider{border:none;border-top:2px solid var(--border);margin:4px 0 24px;}
+.foot{text-align:center;color:var(--muted);font-size:10px;margin-top:24px;}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;}
+.page-sub{font-size:11px;color:var(--sub);margin-bottom:18px;}
+
+@media(max-width:640px){
+  .pl{padding:5px;gap:3px;}
+  .av{width:18px;height:18px;font-size:7px;}
+  .prole{display:none;}
+  .pname{font-size:9px;}
+  .cell{min-height:54px;}
+  .sum-row{grid-template-columns:repeat(3,1fr);}
+  .rates-bar{gap:8px;}
+  .ri{width:62px;}
+}
+@media(max-width:400px){
+  .cell{min-height:46px;}
+  .ci{font-size:11px;}
+  .page{padding:10px 6px calc(70px + var(--sb));}
+}
+</style>
+</head>
+<body>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <div class="tab-logo">Etz<span>QT</span></div>
+  <div class="tab active" data-page="schedule">📅 Schedule</div>
+  <div class="tab" data-page="history">📋 History</div>
+  <div class="tab" data-page="settings">⚙️ Settings</div>
+</div>
+
+<!-- SCHEDULE PAGE -->
+<div class="page active" id="page-schedule">
+  <div class="pay-banner">
+    <div class="pay-left">
+      <div style="font-size:20px">💵</div>
+      <div>
+        <div class="pay-label">Payday for this week</div>
+        <div class="pay-date" id="payDate">—</div>
+        <div class="pay-countdown" id="payCountdown"></div>
+      </div>
+    </div>
+    <div class="pay-right">
+      <div class="pay-total-label">Both Trucks Total</div>
+      <div class="pay-total-amt" id="payTotal">$0</div>
+    </div>
+  </div>
+
+  <!-- Week nav -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+    <button class="btn bc" id="prev" style="flex:0;width:36px;padding:8px;">&#8592;</button>
+    <div id="wkLabel" style="flex:1;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--sub);font-weight:600;"></div>
+    <button class="btn bc" id="next" style="flex:0;width:36px;padding:8px;">&#8594;</button>
+  </div>
+
+  <!-- Week notes -->
+  <div class="week-notes-bar">
+    <div class="week-notes-label">📝 Week Notes</div>
+    <textarea class="week-notes-input" id="weekNotes" placeholder="Any notes for this week — truck issues, route changes, etc…" rows="2"></textarea>
+  </div>
+
+  <div id="app"></div>
+
+  <button class="close-week-btn" id="closeWeekBtn">📦 Close & Save This Week to History</button>
+  <p class="foot">Tap a cell to log a shift & pay &nbsp;·&nbsp; Payday = 3 Fridays after week worked</p>
+</div>
+
+<!-- HISTORY PAGE -->
+<div class="page" id="page-history">
+  <div style="padding-top:4px;">
+    <div class="page-title">📋 Pay History</div>
+    <div class="page-sub">Closed weeks & payroll records</div>
+    <button class="export-btn" id="exportBtn">⬇️ Export History to PDF</button>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div class="page" id="page-settings">
+  <div style="padding-top:4px;">
+    <div class="page-title">⚙️ Settings</div>
+    <div class="page-sub">Edit crew names, roles, and members</div>
+    <div class="settings-section-title">Crew Members</div>
+    <div id="crewEditor"></div>
+    <button class="add-crew-btn" id="addCrewBtn">＋ Add Crew Member</button>
+    <button class="save-btn" id="saveSettingsBtn">Save Changes</button>
+  </div>
+</div>
+
+<!-- Shift Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="handle"></div>
+    <h3 id="mTitle"></h3>
+    <label>Route / Note (optional)</label>
+    <input id="mNote" type="text" autocomplete="off" placeholder="e.g. Lowe's Columbia run…">
+    <label>Pay for this shift</label>
+    <div class="pay-wrap">
+      <em>$</em>
+      <input id="mPay" type="number" inputmode="numeric" min="0" step="5" placeholder="0">
+    </div>
+    <div class="ma">
+      <button class="btn bc" id="mCancel">Cancel</button>
+      <button class="btn bd" id="mDel" style="display:none">Remove</button>
+      <button class="btn bs" id="mSave">Confirm Shift</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const AV_COLORS=[
+  {bg:'rgba(244,167,42,.2)',color:'#f4a72a'},
+  {bg:'rgba(61,214,140,.2)',color:'#3dd68c'},
+  {bg:'rgba(139,150,255,.2)',color:'#8b96ff'},
+  {bg:'rgba(91,141,238,.2)',color:'#5b8dee'},
+  {bg:'rgba(255,95,95,.2)',color:'#ff5f5f'},
+  {bg:'rgba(255,200,80,.2)',color:'#ffc850'},
+  {bg:'rgba(100,220,255,.2)',color:'#64dcff'},
+  {bg:'rgba(200,100,255,.2)',color:'#c864ff'},
+];
+const ROLES=['Owner-Op','Driver','Helper'];
+const TRUCKS=[
+  {id:'t1',label:'Truck 1',hdrCls:'t1-header',onCls:'on-t1'},
+  {id:'t2',label:'Truck 2',hdrCls:'t2-header',onCls:'on-t2'},
+];
+const DS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DF=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DEFAULT_CREW=[
+  {id:'ty',name:'Ty',role:'Owner-Op'},
+  {id:'anthony',name:'Anthony',role:'Driver'},
+  {id:'damarien',name:'Damarien',role:'Helper'},
+  {id:'derawnte',name:'Derawnte',role:'Driver'},
+  {id:'matthew',name:'Matthew',role:'Helper'},
+  {id:'jordan',name:'Jordan',role:'Helper'},
+];
+
+let off=0;
+let sched=ld('etzSchedV8',{});
+let rates=ld('etzRatesV8',{});
+let crew=ld('etzCrewV8',DEFAULT_CREW);
+let history=ld('etzHistoryV8',[]);
+let paidStatus=ld('etzPaidV8',{});
+let weekNotesSaved=ld('etzNotesV8',{});
+let ctx=null;
+
+function ld(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v!==null?v:d;}catch{return d;}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function getRate(tid,pid){return parseFloat(rates[tid]?.[pid])||0;}
+function setRate(tid,pid,val){if(!rates[tid])rates[tid]={};rates[tid][pid]=parseFloat(val)||0;sv('etzRatesV8',rates);}
+function getAv(idx){return AV_COLORS[idx%AV_COLORS.length];}
+function initials(name){return name.trim().slice(0,2).toUpperCase();}
+
+function wkDates(o){
+  const t=new Date();t.setHours(0,0,0,0);
+  const s=new Date(t);
+  s.setDate(t.getDate()-((t.getDay()+1)%7)+o*7);
+  return Array.from({length:7},(_,i)=>{const dt=new Date(s);dt.setDate(s.getDate()+i);return dt;});
+}
+function getPayday(dates){const pd=new Date(dates[0]);pd.setDate(dates[0].getDate()+20);return pd;}
+function dk(dt){return dt.toISOString().slice(0,10);}
+function dfmt(dt){return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function dfmtFull(dt){return dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});}
+function countdown(pd){
+  const t=new Date();t.setHours(0,0,0,0);
+  const d=Math.round((pd-t)/864e5);
+  if(d<0)return 'Paid out';
+  if(d===0)return '🎉 Payday is today!';
+  if(d===1)return 'Tomorrow!';
+  return `${d} days away`;
+}
+function wkKey(dates){return dk(dates[0]);}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('page-'+tab.dataset.page).classList.add('active');
+    if(tab.dataset.page==='history')renderHistory();
+    if(tab.dataset.page==='settings')renderCrewEditor();
+  };
+});
+
+// ── SCHEDULE RENDER ───────────────────────────────────────────────────────────
+function render(){
+  const dates=wkDates(off);
+  const today=new Date();today.setHours(0,0,0,0);
+  const payday=getPayday(dates);
+  const wk=wkKey(dates);
+  const n=dates.length;
+
+  document.getElementById('wkLabel').textContent=`${dfmt(dates[0])} – ${dfmt(dates[dates.length-1])}`;
+  document.getElementById('payDate').textContent=dfmtFull(payday);
+  document.getElementById('payCountdown').textContent=countdown(payday);
+
+  // Week notes
+  const notesEl=document.getElementById('weekNotes');
+  notesEl.value=weekNotesSaved[wk]||'';
+  notesEl.oninput=()=>{weekNotesSaved[wk]=notesEl.value;sv('etzNotesV8',weekNotesSaved);};
+
+  let grandTotal=0;
+  const app=document.getElementById('app');
+  app.innerHTML='';
+
+  TRUCKS.forEach((truck,ti)=>{
+    const block=document.createElement('div');
+    block.className='truck-block';
+
+    const hdr=document.createElement('div');
+    hdr.className=`truck-header ${truck.hdrCls}`;
+    hdr.innerHTML=`🚛 ${truck.label}`;
+    block.appendChild(hdr);
+
+    // Rates bar
+    const rbar=document.createElement('div');
+    rbar.className='rates-bar';
+    rbar.innerHTML='<span class="rl">Daily Rates</span>';
+    crew.forEach(p=>{
+      const rf=document.createElement('div');
+      rf.className='rf';
+      rf.innerHTML=`<span class="rn">${p.name}</span><div class="rw"><em>$</em><input class="ri" data-tid="${truck.id}" data-pid="${p.id}" type="number" inputmode="numeric" min="0" step="5" value="${getRate(truck.id,p.id)}"></div>`;
+      rbar.appendChild(rf);
+    });
+    block.appendChild(rbar);
+
+    // Summary with paid toggle
+    const sumRow=document.createElement('div');
+    sumRow.className='sum-row';
+    let truckTotal=0;
+    crew.forEach(p=>{
+      let days=0,pay=0;
+      dates.forEach(dt=>{
+        const sh=sched[truck.id]?.[p.id]?.[dk(dt)];
+        if(sh){days++;pay+=parseFloat(sh.pay)||getRate(truck.id,p.id);}
+      });
+      truckTotal+=pay;grandTotal+=pay;
+      const paidKey=`${truck.id}:${p.id}:${wk}`;
+      const isPaid=paidStatus[paidKey]||false;
+      const card=document.createElement('div');
+      card.className=`sc${isPaid?' paid':''}`;
+      card.innerHTML=`<div class="sn">${p.name}</div><div class="ss">${days} shift${days!==1?'s':''}</div><div class="sp">${pay>0?'$'+pay.toLocaleString():'—'}</div>${pay>0?`<button class="paid-toggle ${isPaid?'ispaid':'unpaid'}" data-key="${paidKey}">${isPaid?'✅ Paid':'⏳ Unpaid'}</button>`:''}`;
+      sumRow.appendChild(card);
+    });
+    const tot=document.createElement('div');
+    tot.className='sc tot';
+    tot.innerHTML=`<div class="sn">Truck Total</div><div class="ss">This week</div><div class="sp">$${truckTotal.toLocaleString()}</div>`;
+    sumRow.appendChild(tot);
+    block.appendChild(sumRow);
+
+    // Day header
+    const gh=document.createElement('div');
+    gh.className='gh';
+    gh.style.gridTemplateColumns=`82px repeat(${n},1fr)`;
+    gh.innerHTML='<div></div>';
+    dates.forEach(dt=>{
+      const isTdy=dt.getTime()===today.getTime();
+      const d=document.createElement('div');
+      d.className=isTdy?'tdy':'';
+      d.innerHTML=`${DS[dt.getDay()]}<span class="dn">${dt.getDate()}</span>`;
+      gh.appendChild(d);
+    });
+    block.appendChild(gh);
+
+    // Crew rows
+    crew.forEach((p,pi)=>{
+      const av=getAv(pi);
+      const row=document.createElement('div');
+      row.className='pr';
+      row.style.gridTemplateColumns=`82px repeat(${n},1fr)`;
+      const pl=document.createElement('div');
+      pl.className='pl';
+      pl.innerHTML=`<div class="av" style="background:${av.bg};color:${av.color}">${initials(p.name)}</div><div><div class="pname">${p.name}</div><div class="prole">${p.role}</div></div>`;
+      row.appendChild(pl);
+      dates.forEach(dt=>{
+        const k=dk(dt);
+        const sh=sched[truck.id]?.[p.id]?.[k];
+        const cell=document.createElement('div');
+        if(sh){
+          const shPay=parseFloat(sh.pay)||getRate(truck.id,p.id);
+          cell.className=`cell ${truck.onCls}`;
+          cell.innerHTML=`<span class="ci">✅</span><span class="cs">Worked</span>${sh.note?`<span class="cn">${sh.note}</span>`:''}${shPay?`<span class="cp">$${shPay.toLocaleString()}</span>`:''}`;
+          cell.onclick=()=>openM(truck,p,dt,k,true);
+        } else {
+          cell.className='cell';
+          cell.innerHTML=`<span class="ci">＋</span><span class="cs">Add</span>`;
+          cell.onclick=()=>openM(truck,p,dt,k,false);
+        }
+        row.appendChild(cell);
+      });
+      block.appendChild(row);
+    });
+
+    if(ti<TRUCKS.length-1){const div=document.createElement('hr');div.className='divider';block.appendChild(div);}
+    app.appendChild(block);
+  });
+
+  document.getElementById('payTotal').textContent='$'+grandTotal.toLocaleString();
+
+  // Rate inputs
+  document.querySelectorAll('.ri').forEach(inp=>{
+    inp.oninput=()=>{setRate(inp.dataset.tid,inp.dataset.pid,inp.value);render();};
+  });
+
+  // Paid toggles
+  document.querySelectorAll('.paid-toggle').forEach(btn=>{
+    btn.onclick=()=>{
+      const key=btn.dataset.key;
+      paidStatus[key]=!paidStatus[key];
+      sv('etzPaidV8',paidStatus);
+      render();
+    };
+  });
+}
+
+// ── CLOSE WEEK ────────────────────────────────────────────────────────────────
+document.getElementById('closeWeekBtn').onclick=()=>{
+  const dates=wkDates(off);
+  const wk=wkKey(dates);
+  const payday=getPayday(dates);
+
+  // Check already saved
+  if(history.find(h=>h.wk===wk)){
+    if(!confirm('This week is already saved. Overwrite it?'))return;
+    history=history.filter(h=>h.wk!==wk);
+  }
+
+  // Build snapshot
+  const snapshot={
+    wk,
+    dateRange:`${dfmt(dates[0])} – ${dfmt(dates[dates.length-1])}`,
+    payday:dfmtFull(payday),
+    notes:weekNotesSaved[wk]||'',
+    total:0,
+    entries:[],
+  };
+
+  TRUCKS.forEach(truck=>{
+    crew.forEach(p=>{
+      let days=0,pay=0;
+      dates.forEach(dt=>{
+        const sh=sched[truck.id]?.[p.id]?.[dk(dt)];
+        if(sh){days++;pay+=parseFloat(sh.pay)||getRate(truck.id,p.id);}
+      });
+      if(days>0){
+        const paidKey=`${truck.id}:${p.id}:${wk}`;
+        snapshot.entries.push({truck:truck.label,name:p.name,days,pay,paid:paidStatus[paidKey]||false});
+        snapshot.total+=pay;
+      }
+    });
+  });
+
+  history.unshift(snapshot);
+  sv('etzHistoryV8',history);
+  alert(`✅ Week of ${snapshot.dateRange} saved to History!`);
+};
+
+// ── HISTORY RENDER ────────────────────────────────────────────────────────────
+function renderHistory(){
+  const el=document.getElementById('historyList');
+  el.innerHTML='';
+  if(!history.length){
+    el.innerHTML='<div class="history-empty">No history yet.<br>Close a week on the Schedule tab to save it here.</div>';
+    return;
+  }
+  history.forEach((h,hi)=>{
+    const card=document.createElement('div');
+    card.className='history-week';
+    const allPaid=h.entries.every(e=>e.paid);
+    card.innerHTML=`
+      <div class="hw-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div>
+          <div class="hw-dates">${h.dateRange}</div>
+          <div class="hw-payday">💵 Payday: ${h.payday} &nbsp;·&nbsp; <span style="color:${allPaid?'var(--green)':'var(--red)'};">${allPaid?'✅ All Paid':'⏳ Pending'}</span></div>
+        </div>
+        <div class="hw-total">$${h.total.toLocaleString()}</div>
+      </div>
+      <div class="hw-body" style="display:none;">
+        ${h.entries.map(e=>`
+          <div class="hw-person">
+            <div class="hw-person-left">
+              <div>
+                <div class="hw-person-name">${e.name} <span style="font-size:10px;color:var(--muted);">(${e.truck})</span></div>
+                <div class="hw-person-shifts">${e.days} shift${e.days!==1?'s':''}</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="hw-person-pay">$${e.pay.toLocaleString()}</div>
+              <span class="hw-paid-badge ${e.paid?'paid':'unpaid'}">${e.paid?'Paid':'Unpaid'}</span>
+            </div>
+          </div>
+        `).join('')}
+        ${h.notes?`<div class="hw-notes">📝 ${h.notes}</div>`:''}
+        <span class="hw-delete" onclick="deleteHistory(${hi})">🗑 Delete Record</span>
+      </div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+function deleteHistory(idx){
+  if(!confirm('Delete this record?'))return;
+  history.splice(idx,1);
+  sv('etzHistoryV8',history);
+  renderHistory();
+}
+
+// ── PDF EXPORT ────────────────────────────────────────────────────────────────
+document.getElementById('exportBtn').onclick=()=>{
+  if(!history.length){alert('No history to export yet.');return;}
+  let html=`<html><head><style>
+    body{font-family:Arial,sans-serif;padding:24px;color:#111;}
+    h1{font-size:20px;margin-bottom:4px;}
+    h2{font-size:14px;margin:18px 0 6px;border-bottom:1px solid #ccc;padding-bottom:4px;}
+    table{width:100%;border-collapse:collapse;margin-bottom:8px;}
+    th,td{text-align:left;padding:6px 8px;border-bottom:1px solid #eee;font-size:12px;}
+    th{background:#f5f5f5;font-weight:700;}
+    .total{font-weight:700;font-size:14px;}
+    .paid{color:green;} .unpaid{color:red;}
+    .notes{font-style:italic;color:#666;font-size:11px;margin-top:4px;}
+  </style></head><body>
+  <h1>EtzQT — Payroll History</h1>
+  <p style="font-size:11px;color:#666;">Generated ${new Date().toLocaleDateString()}</p>`;
+
+  history.forEach(h=>{
+    html+=`<h2>${h.dateRange} &nbsp;|&nbsp; Payday: ${h.payday}</h2>
+    <table><tr><th>Name</th><th>Truck</th><th>Shifts</th><th>Pay</th><th>Status</th></tr>
+    ${h.entries.map(e=>`<tr><td>${e.name}</td><td>${e.truck}</td><td>${e.days}</td><td>$${e.pay.toLocaleString()}</td><td class="${e.paid?'paid':'unpaid'}">${e.paid?'Paid':'Unpaid'}</td></tr>`).join('')}
+    <tr><td colspan="3" class="total">Total</td><td class="total">$${h.total.toLocaleString()}</td><td></td></tr></table>
+    ${h.notes?`<div class="notes">Notes: ${h.notes}</div>`:''}`;
+  });
+
+  html+='</body></html>';
+  const win=window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  win.print();
+};
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+function renderCrewEditor(){
+  const el=document.getElementById('crewEditor');
+  el.innerHTML='';
+  crew.forEach((p,i)=>{
+    const item=document.createElement('div');
+    item.className='crew-item';
+    const roleOpts=ROLES.map(r=>`<option value="${r}"${p.role===r?' selected':''}>${r}</option>`).join('');
+    item.innerHTML=`
+      <input type="text" value="${p.name}" placeholder="Name" data-idx="${i}" class="crew-name-input">
+      <select data-idx="${i}" class="crew-role-select">${roleOpts}</select>
+      <button class="remove-btn" data-idx="${i}">✕</button>
+    `;
+    el.appendChild(item);
+  });
+  el.querySelectorAll('.remove-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      const idx=parseInt(btn.dataset.idx);
+      if(crew.length<=1){alert('Need at least 1 crew member.');return;}
+      crew.splice(idx,1);
+      renderCrewEditor();
+    };
+  });
+}
+
+document.getElementById('addCrewBtn').onclick=()=>{
+  crew.push({id:'p'+Date.now(),name:'New Person',role:'Helper'});
+  renderCrewEditor();
+};
+
+document.getElementById('saveSettingsBtn').onclick=()=>{
+  document.querySelectorAll('.crew-name-input').forEach((inp,i)=>{
+    crew[parseInt(inp.dataset.idx)].name=inp.value.trim()||crew[parseInt(inp.dataset.idx)].name;
+  });
+  document.querySelectorAll('.crew-role-select').forEach((sel,i)=>{
+    crew[parseInt(sel.dataset.idx)].role=sel.value;
+  });
+  sv('etzCrewV8',crew);
+  alert('✅ Crew saved!');
+  render();
+};
+
+// ── SHIFT MODAL ───────────────────────────────────────────────────────────────
+function openM(truck,person,dt,k,existing){
+  ctx={tid:truck.id,pid:person.id,k};
+  const sh=sched[truck.id]?.[person.id]?.[k];
+  const def=getRate(truck.id,person.id);
+  document.getElementById('mTitle').textContent=`${truck.label} · ${person.name} · ${DF[dt.getDay()]} ${dfmt(dt)}`;
+  document.getElementById('mNote').value=sh?.note||'';
+  document.getElementById('mPay').value=sh?.pay||(def>0?def:'');
+  document.getElementById('mDel').style.display=existing?'flex':'none';
+  document.getElementById('mSave').textContent=existing?'Update':'Confirm Shift';
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('mPay').focus(),80);
+}
+function closeM(){document.getElementById('overlay').classList.remove('open');ctx=null;}
+document.getElementById('mSave').onclick=()=>{
+  if(!ctx)return;
+  const pay=document.getElementById('mPay').value;
+  const note=document.getElementById('mNote').value.trim();
+  if(!sched[ctx.tid])sched[ctx.tid]={};
+  if(!sched[ctx.tid][ctx.pid])sched[ctx.tid][ctx.pid]={};
+  sched[ctx.tid][ctx.pid][ctx.k]={pay,note};
+  sv('etzSchedV8',sched);closeM();render();
+};
+document.getElementById('mDel').onclick=()=>{
+  if(!ctx)return;
+  if(sched[ctx.tid]?.[ctx.pid])delete sched[ctx.tid][ctx.pid][ctx.k];
+  sv('etzSchedV8',sched);closeM();render();
+};
+document.getElementById('mCancel').onclick=closeM;
+document.getElementById('overlay').onclick=e=>{if(e.target.id==='overlay')closeM();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();});
+document.getElementById('prev').onclick=()=>{off--;render();};
+document.getElementById('next').onclick=()=>{off++;render();};
+render();
+</script>
+</body>
+</html>
